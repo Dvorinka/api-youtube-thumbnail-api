@@ -1,0 +1,136 @@
+openapi: 3.0.3
+info:
+  title: YouTube Thumbnail API
+  description: API for generating YouTube thumbnail URLs from video URLs or IDs
+  version: 1.0.0
+  contact:
+    name: API Services
+  license:
+    name: MIT
+
+servers:
+  - url: http://localhost:8099
+    description: Development server
+  - url: https://api.example.com
+    description: Production server
+
+paths:
+  /healthz:
+    get:
+      summary: Health check endpoint
+      description: Returns the health status of the service
+      tags:
+        - Health
+      responses:
+        '200':
+          description: Service is healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: ok
+
+  /v1/youtube/thumbnail:
+    post:
+      summary: Generate thumbnail URLs
+      description: Extract a YouTube video ID and return direct thumbnail URLs
+      tags:
+        - Thumbnails
+      security:
+        - ApiKeyAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ThumbnailRequest'
+      responses:
+        '200':
+          description: Successful thumbnail generation response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/ThumbnailResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '405':
+          description: Method not allowed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+components:
+  schemas:
+    ThumbnailRequest:
+      type: object
+      required:
+        - video_url_or_id
+      properties:
+        video_url_or_id:
+          type: string
+          description: YouTube video URL or raw video ID
+          example: "https://www.youtube.com/watch?v=ifHYS1Ji9Ag"
+        quality:
+          type: string
+          enum: [maxres, high, medium, low, default]
+          description: Requested thumbnail quality alias
+          default: maxres
+          example: "maxres"
+
+    ThumbnailResponse:
+      type: object
+      properties:
+        video_id:
+          type: string
+          description: YouTube video ID
+          example: "ifHYS1Ji9Ag"
+        video_url:
+          type: string
+          description: Canonical YouTube watch URL
+          example: "https://www.youtube.com/watch?v=ifHYS1Ji9Ag"
+        thumbnails:
+          type: object
+          description: Returned thumbnail URLs. The response always includes default and the requested quality when different.
+          additionalProperties:
+            type: string
+          example:
+            default: "https://img.youtube.com/vi/ifHYS1Ji9Ag/default.jpg"
+            maxres: "https://img.youtube.com/vi/ifHYS1Ji9Ag/maxresdefault.jpg"
+
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+          description: Error message
+          example: "quality must be one of: maxres, high, medium, low, default"
+
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: API key for authentication (format: "Bearer YOUR_API_KEY")
+
+tags:
+  - name: Health
+    description: Health check endpoints
+  - name: Thumbnails
+    description: Thumbnail URL generation

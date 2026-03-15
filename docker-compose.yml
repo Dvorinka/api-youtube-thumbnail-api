@@ -4,15 +4,15 @@ services:
   youtube-thumbnail-api:
     build: .
     ports:
-      - "8099:8099"
+      - "30018:30018"
     environment:
-      - PORT=8099
+      - PORT=30018
       - YOUTUBE_API_KEY=${YOUTUBE_API_KEY:-dev-youtube-key}
-      - RAPIDAPI_PROXY_SECRET=${RAPIDAPI_PROXY_SECRET:-your-rapidapi-secret}
+      - RAPIDAPI_PROXY_SECRET=${RAPIDAPI_PROXY_SECRET:-}
       - ENVIRONMENT=${ENVIRONMENT:-development}
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8099/healthz"]
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:30018/healthz"]
       interval: 30s
       timeout: 10s
       retries: 3

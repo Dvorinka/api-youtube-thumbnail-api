@@ -17,7 +17,7 @@ import (
 func main() {
 	logger := log.New(os.Stdout, "[youtube-thumbnail] ", log.LstdFlags)
 
-	port := envString("PORT", "8099")
+	port := envString("PORT", "30019")
 	apiKey := envString("YOUTUBE_API_KEY", "dev-youtube-key")
 	environment := envString("ENVIRONMENT", "development")
 	proxySecret := envString("RAPIDAPI_PROXY_SECRET", "")

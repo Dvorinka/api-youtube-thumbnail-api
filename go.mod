@@ -1,4 +1,4 @@
-module youtube-thumbnail-api
+module apiservices/youtube-thumbnail-api
 
 go 1.25.7
 
